@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -36,9 +37,9 @@ public class MainActivity extends Activity {
         webView.getSettings().setDomStorageEnabled(true);
         webView.setBackgroundColor(Color.BLACK);
 
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             webView.setWebContentsDebuggingEnabled(true);
-        }*/
+        }
 
         webView.setWebChromeClient(new WebChromeClient());
 
@@ -47,7 +48,6 @@ public class MainActivity extends Activity {
 
         webView.setWebViewClient(new WebViewClient() {
             @SuppressWarnings("deprecation")
-
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 //todo differentiate into error types (no connection...)
 
@@ -71,6 +71,18 @@ public class MainActivity extends Activity {
             public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError rerr) {
                 onReceivedError(view, rerr.getErrorCode(), rerr.getDescription().toString(), req.getUrl().toString());
             }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if(url.contains("rodinapp.com") || url.contains("rodin.io")) {
+                    view.loadUrl(url);
+                } else {
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(i);
+                }
+                return true;
+            }
+
         });
 
         webView.getSettings().setJavaScriptEnabled(true);
